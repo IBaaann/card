@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Наконец-то ты дома ❤️</title>
+    
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        crimson: {
+                            500: '#ff1744',
+                            600: '#d50000',
+                            700: '#9b0000',
+                            800: '#660000',
+                            900: '#330000',
+                        },
+                        darkness: {
+                            950: '#070506',
+                            900: '#0a0a0c',
+                            800: '#121115',
+                            700: '#1a1820',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        cursive: ['Great Vibes', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0c;
+            color: #e5e5e5;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 23, 68, 0.9)); }
+        }
+
+        .animate-heartbeat {
+            animation: heartbeat 2.5s infinite ease-in-out;
+        }
+
+        
+        .glow-crimson {
+            box-shadow: 0 0 45px -5px rgba(213, 0, 0, 0.4), 0 0 20px -5px rgba(255, 23, 68, 0.25);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 12px rgba(255, 23, 68, 0.6), 0 0 25px rgba(155, 0, 0, 0.4);
+        }
+
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #660000;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d50000;
+        }
+
+      
+        .glass-card {
+            background: rgba(18, 17, 21, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 23, 68, 0.25);
+        }
+
+        ::selection {
+            background: #9b0000;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative bg-darkness-900 text-gray-200">
+
+   
+    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-crimson-900/30 blur-[150px] pointer-events-none rounded-full z-0"></div>
+    <div class="fixed bottom-0 right-0 w-[450px] h-[450px] bg-crimson-800/20 blur-[160px] pointer-events-none rounded-full z-0"></div>
+
+    
+    <div id="audioPrompt" class="fixed bottom-6 right-6 z-50 hidden transition-all duration-500 transform translate-y-4 opacity-0">
+        <button onclick="forcePlayAudio()" class="px-5 py-3 rounded-2xl glass-card border border-crimson-500 bg-crimson-950/90 text-white shadow-2xl shadow-crimson-900/60 flex items-center gap-3 hover:bg-crimson-900/80 transition-all active:scale-95 group">
+            <span class="w-3 h-3 rounded-full bg-crimson-500 animate-ping"></span>
+            <i class="fas fa-music text-crimson-400 group-hover:rotate-12 transition-transform"></i>
+            <span class="text-xs sm:text-sm font-medium tracking-wide">Включить музыку 🎵</span>
+        </button>
+    </div>
+
+    
+    <header class="relative z-10 w-full px-6 py-6 flex justify-between items-center max-w-5xl mx-auto" id="mainHeader">
+        <div class="flex items-center space-x-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-crimson-600 animate-ping inline-block"></span>
+            <span class="font-serif italic text-lg text-crimson-500 tracking-wider">For You</span>
+        </div>
+        
+       
+        <div class="flex items-center space-x-4">
+            <button id="soundToggleBtn" onclick="toggleAudio()" class="px-4 py-2 rounded-full glass-card hover:border-crimson-500/50 transition-all duration-300 text-xs tracking-wider uppercase flex items-center gap-2 text-gray-300 hover:text-white">
+                <i id="soundIcon" class="fas fa-music text-crimson-500"></i>
+                <span id="soundText">МУЗЫКА: ВЫКЛ</span>
+            </button>
+        </div>
+    </header>
+
+    
+    <audio id="bgMusic" preload="auto" loop crossorigin="anonymous">
+        <source src="nautilus.mp3" type="audio/mpeg">
+    </audio>
+
+    
+    <main id="mainContent" class="relative z-10 flex-grow flex items-center justify-center px-4 py-6 max-w-4xl mx-auto w-full">
+        <div class="w-full glass-card rounded-3xl p-6 sm:p-10 md:p-12 glow-crimson relative overflow-hidden transition-all duration-700 my-auto">
+            
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-crimson-600 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-crimson-900 to-transparent"></div>
+
+            <div class="text-center mb-10">
+                <div class="inline-block mb-3">
+                    <i class="fas fa-heart text-3xl sm:text-4xl text-crimson-600 animate-heartbeat"></i>
+                </div>
+                <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold text-white tracking-wide glow-text">
+                    Я очень соскучился
+                </h1>
+                <p class="font-cursive text-2xl sm:text-3xl text-crimson-500 mt-2 opacity-90">
+                    ...и наконец-то ты дома
+                </p>
+            </div>
+
+            <div class="space-y-6 font-serif text-lg sm:text-xl md:text-2xl leading-relaxed sm:leading-loose text-gray-200 text-justify sm:text-left">
+                
+                <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
+                    В первые дни я думал, что ты уехала всего на неделю и совсем скоро вернёшься. Казалось, что это не так уж много и возможно я даже особо не замечу твоего отсутствия. Но уже после первого дня мне стало очень непривычно. Я начал очень сильно скучать. Ты ещё и не всегда могла мне отвечать из-за связи и девочек и у меня было ощущение, будто ты уехала не на неделю, а на год(((
+                </p>
+
+                <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
+                    Мне было очень грустно от того, что я даже не могу нормально с тобой поговорить, узнать, как прошёл твой день, услышать тебя. Особенно в последние дни я сильно переживал за твоё состояние. Я даже не мог просто посмотреть на твоё лицо, увидеть твои эмоции и понять, как ты себя чувствуешь, чем занимаешься и что у тебя происходит. Я понял, насколько сильно ты стала частью моей жизни. Без тебя всё какое-то пустое и непривычное. Каждый день мне хотелось просто прийти к тебе домой, увидеть тебя, крепко обнять и зацеловать до невозможности. А когда ты присылала мне фотки, я ваще сходил с ума))), каждую минуту думал как ты приедешь, как мы прийдем домой, я схвачу тебя, подниму на руки и кину на кровать, свяжу тебе руки, и доведу тебя до такого оргазма что ты стоять не сможешь)), на парах как только думал о тебе, генадию было похуй где мы с ним находимся, он стоял как на параде клянусь. За эту неделю я сходил с ума что тебя нет рядом, все время хотелось рассказать тебе что происходит, послушать твою реакцию и смех, и самое главное очень хотелось увидеть тебя.
+                </p>
+
+                <div class="py-4 my-2 border-y border-crimson-900/40 text-center font-serif italic text-crimson-200 leading-relaxed text-lg sm:text-xl space-y-4">
+                    <p>
+                        Я ждал тебя 8 бутылок морса,<br>
+                        3 заказанных озона,<br>
+                        76 кругов проиграла алиса
+                    </p>
+                    <p>
+                        я ждал тебя 20 посадок в машину,<br>
+                        20 целых 35 сотых сигарет,<br>
+                        я 70 раз вымыл чайный осадок,<br>
+                        и даже никуда не ходил.
+                    </p>
+                    <p>
+                        Практически два кошмара, тюбик пасты,<br>
+                        пару книг,<br>
+                        17 пустых восхождений в шарагу,<br>
+                        я ждал тебя так что от жизни отвык.
+                    </p>
+                </div>
+
+                <div class="pt-4 text-center">
+                    <p class="font-cursive text-3xl sm:text-4xl md:text-5xl text-crimson-500 leading-normal glow-text">
+                        Я очень люблю тебя и соскучился, и наконец то ты дома))) ❤️❤️❤️
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="mt-12 pt-6 border-t border-crimson-900/30 flex flex-row items-center justify-between text-xs text-gray-400 font-sans">
+                <div class="flex items-center gap-2 text-crimson-500">
+                    <i class="fas fa-lock"></i>
+                    <span>Только для твоих глаз</span>
+                </div>
+                <div class="font-serif italic text-gray-400 text-right">
+                    С возвращением домой, любимая.
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="relative z-10 w-full py-6 text-center text-xs text-gray-600 font-sans">
+        <p>Создано специально для тебя с любовью ❤️</p>
+    </footer>
+
+    <script>
+        
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = height + Math.random() * 50;
+                this.size = Math.random() * 2.5 + 1;
+                this.speedY = Math.random() * 0.7 + 0.2;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = Math.random() > 0.4 ? '#ff1744' : '#9b0000';
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) this.reset();
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const particles = Array.from({ length: 50 }, () => new Particle());
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.onload = function() {
+            animateParticles();
+            playNautilusAudio();
+        };
+
+       
+        const audio = document.getElementById('bgMusic');
+        let isAudioPlaying = false;
+        let fadeInterval = null;
+
+        function playNautilusAudio() {
+            if (!audio) return;
+
+            audio.currentTime = 39;
+            audio.volume = 0; 
+
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    isAudioPlaying = true;
+                    updateSoundButtonUI(true);
+                    hideAudioPrompt();
+
+                  
+                    const targetVolume = 0.5;
+                    const duration = 4000; 
+                    const intervalTime = 50;
+                    const step = targetVolume / (duration / intervalTime);
+
+                    if (fadeInterval) clearInterval(fadeInterval);
+
+                    fadeInterval = setInterval(() => {
+                        if (audio.volume + step < targetVolume) {
+                            audio.volume += step;
+                        } else {
+                            audio.volume = targetVolume;
+                            clearInterval(fadeInterval);
+                        }
+                    }, intervalTime);
+                }).catch(error => {
+                    console.log("Автозапуск заблокирован браузером. Показываем кнопку активации:", error);
+                    showAudioPrompt();
+                });
+            }
+        }
+
+        function forcePlayAudio() {
+            if (!audio) return;
+            audio.currentTime = 39;
+            audio.volume = 0.5;
+            audio.play().then(() => {
+                isAudioPlaying = true;
+                updateSoundButtonUI(true);
+                hideAudioPrompt();
+            }).catch(e => console.log("Ошибка принудительного запуска:", e));
+        }
+
+        function showAudioPrompt() {
+            const prompt = document.getElementById('audioPrompt');
+            if (prompt) {
+                prompt.classList.remove('hidden');
+                setTimeout(() => {
+                    prompt.classList.remove('translate-y-4', 'opacity-0');
+                }, 50);
+            }
+        }
+
+        function hideAudioPrompt() {
+            const prompt = document.getElementById('audioPrompt');
+            if (prompt) {
+                prompt.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => {
+                    prompt.classList.add('hidden');
+                }, 500);
+            }
+        }
+
+        function toggleAudio() {
+            if (!audio) return;
+
+            if (audio.paused) {
+                if (audio.currentTime < 39) {
+                    audio.currentTime = 39;
+                }
+                audio.play();
+                isAudioPlaying = true;
+                updateSoundButtonUI(true);
+                hideAudioPrompt();
+            } else {
+                audio.pause();
+                isAudioPlaying = false;
+                updateSoundButtonUI(false);
+            }
+        }
+
+        function updateSoundButtonUI(playing) {
+            const btnText = document.getElementById('soundText');
+            const icon = document.getElementById('soundIcon');
+            if (playing) {
+                btnText.textContent = "МУЗЫКА: ВКЛ";
+                icon.className = "fas fa-volume-high text-crimson-500";
+            } else {
+                btnText.textContent = "МУЗЫКА: ВЫКЛ";
+                icon.className = "fas fa-music text-crimson-500";
+            }
+        }
+    </script>
+</body>
+</html>

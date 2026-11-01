@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Наконец-то</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        crimson: {
+                            500: '#ff1744',
+                            600: '#d50000',
+                            700: '#9b0000',
+                            800: '#660000',
+                            900: '#330000',
+                        },
+                        darkness: {
+                            950: '#070506',
+                            900: '#0a0a0c',
+                            800: '#121115',
+                            700: '#1a1820',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        cursive: ['Great Vibes', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0c;
+            color: #e5e5e5;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 23, 68, 0.9)); }
+        }
+
+        .animate-heartbeat {
+            animation: heartbeat 2.5s infinite ease-in-out;
+        }
+
+        .glow-crimson {
+            box-shadow: 0 0 45px -5px rgba(213, 0, 0, 0.4), 0 0 20px -5px rgba(255, 23, 68, 0.25);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 12px rgba(255, 23, 68, 0.6), 0 0 25px rgba(155, 0, 0, 0.4);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #660000;
+            border-radius: 3px;
+        }
+
+        .glass-card {
+            background: rgba(18, 17, 21, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 23, 68, 0.25);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative bg-darkness-900 text-gray-200">
+
+    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-crimson-900/30 blur-[150px] pointer-events-none rounded-full z-0"></div>
+    <div class="fixed bottom-0 right-0 w-[450px] h-[450px] bg-crimson-800/20 blur-[160px] pointer-events-none rounded-full z-0"></div>
+
+    <!-- Экран ввода пароля -->
+    <div id="lockScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-darkness-900/95 backdrop-blur-xl transition-all duration-700">
+        <div id="lockCard" class="w-full max-w-md glass-card rounded-3xl p-8 sm:p-10 text-center glow-crimson relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-crimson-600 to-transparent"></div>
+            
+            <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-crimson-950/80 border border-crimson-600/40 flex items-center justify-center text-crimson-500 animate-heartbeat text-2xl">
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <h2 class="font-serif text-2xl sm:text-3xl text-white font-semibold mb-2 glow-text">Доступ к посланию</h2>
+            <p class="text-xs sm:text-sm text-gray-400 font-sans mb-6">Введите пароль</p>
+
+            <form id="loginForm" class="space-y-4">
+                <div class="relative">
+                    <input type="text" id="passInput" placeholder="дд.мм.гггг" autocomplete="off"
+                        class="w-full px-5 py-3.5 rounded-full bg-darkness-950/90 border border-crimson-900/60 focus:border-crimson-500 text-center font-mono text-lg text-white placeholder-gray-600 focus:outline-none transition-all duration-300">
+                </div>
+                <p id="errorMsg" class="text-xs text-crimson-500 min-h-[1rem] opacity-0 transition-opacity duration-300 font-sans">Неверно</p>
+                <button type="submit" class="w-full py-3.5 rounded-full bg-gradient-to-r from-crimson-800 via-crimson-600 to-crimson-800 hover:from-crimson-700 hover:to-crimson-600 text-white font-medium text-sm tracking-wider uppercase transition-all duration-300 shadow-lg shadow-crimson-900/50 hover:shadow-crimson-600/40 active:scale-95">
+                    Открыть послание <i class="fas fa-key ml-2 text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Фоновые частицы (сохранены из вашего оригинального кода)
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = height + Math.random() * 50;
+                this.size = Math.random() * 2.5 + 1;
+                this.speedY = Math.random() * 0.7 + 0.2;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = Math.random() > 0.4 ? '#ff1744' : '#9b0000';
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const particles = Array.from({ length: 50 }, () => new Particle());
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        window.onload = function() { animateParticles(); };
+
+        // Логика отправки пароля на сервер бэкенда
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('passInput').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+            const lockCard = document.getElementById('lockCard');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                if (response.ok) {
+                    // Если пароль верный — перенаправляем на защищенную страницу с поздравлением
+                    window.location.href = '/success.html';
+                } else {
+                    // Если неверный — показываем ошибку и запускаем анимацию тряски
+                    errorMsg.textContent = "Неверно";
+                    errorMsg.classList.remove('opacity-0');
+                    lockCard.classList.remove('animate-shake');
+                    void lockCard.offsetWidth;
+                    lockCard.classList.add('animate-shake');
+                }
+            } catch (err) {
+                console.error(err);
+                errorMsg.textContent = "Ошибка соединения";
+                errorMsg.classList.remove('opacity-0');
+            }
+        });
+    </script>
+</body>
+</html>
