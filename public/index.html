@@ -103,7 +103,7 @@
     <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-crimson-900/30 blur-[150px] pointer-events-none rounded-full z-0"></div>
     <div class="fixed bottom-0 right-0 w-[450px] h-[450px] bg-crimson-800/20 blur-[160px] pointer-events-none rounded-full z-0"></div>
 
-    <!-- Экран ввода пароля -->
+    
     <div id="lockScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-darkness-900/95 backdrop-blur-xl transition-all duration-700">
         <div id="lockCard" class="w-full max-w-md glass-card rounded-3xl p-8 sm:p-10 text-center glow-crimson relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-crimson-600 to-transparent"></div>
@@ -129,7 +129,7 @@
     </div>
 
     <script>
-        // Фоновые частицы (сохранены из вашего оригинального кода)
+       
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
@@ -175,7 +175,7 @@
         }
         window.onload = function() { animateParticles(); };
 
-        // Логика отправки пароля на сервер бэкенда
+        
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const password = document.getElementById('passInput').value.trim();
@@ -190,10 +190,10 @@
                 });
 
                 if (response.ok) {
-                    // Если пароль верный — перенаправляем на защищенную страницу с поздравлением
+                    
                     window.location.href = '/success.html';
                 } else {
-                    // Если неверный — показываем ошибку и запускаем анимацию тряски
+                    
                     errorMsg.textContent = "Неверно";
                     errorMsg.classList.remove('opacity-0');
                     lockCard.classList.remove('animate-shake');

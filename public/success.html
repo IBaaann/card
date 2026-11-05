@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Наконец-то ты дома ❤️</title>
+    <title>Для тебя ❤️</title>
     
-    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
     
-    
+    <!-- Font Awesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
@@ -54,7 +54,6 @@
             user-select: none;
         }
 
-        
         @keyframes heartbeat {
             0%, 100% { transform: scale(1); opacity: 0.85; }
             50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 23, 68, 0.9)); }
@@ -64,7 +63,6 @@
             animation: heartbeat 2.5s infinite ease-in-out;
         }
 
-        
         .glow-crimson {
             box-shadow: 0 0 45px -5px rgba(213, 0, 0, 0.4), 0 0 20px -5px rgba(255, 23, 68, 0.25);
         }
@@ -73,7 +71,6 @@
             text-shadow: 0 0 12px rgba(255, 23, 68, 0.6), 0 0 25px rgba(155, 0, 0, 0.4);
         }
 
-        
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -84,11 +81,7 @@
             background: #660000;
             border-radius: 3px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #d50000;
-        }
 
-      
         .glass-card {
             background: rgba(18, 17, 21, 0.82);
             backdrop-filter: blur(20px);
@@ -96,22 +89,32 @@
             border: 1px solid rgba(255, 23, 68, 0.25);
         }
 
-        ::selection {
-            background: #9b0000;
-            color: #ffffff;
+        .page-content {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        .page-hidden {
+            opacity: 0;
+            transform: translateX(30px);
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        .page-active {
+            opacity: 1;
+            transform: translateX(0);
+            position: relative;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between relative bg-darkness-900 text-gray-200">
 
-   
     <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
 
-    
     <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-crimson-900/30 blur-[150px] pointer-events-none rounded-full z-0"></div>
     <div class="fixed bottom-0 right-0 w-[450px] h-[450px] bg-crimson-800/20 blur-[160px] pointer-events-none rounded-full z-0"></div>
 
-    
     <div id="audioPrompt" class="fixed bottom-6 right-6 z-50 hidden transition-all duration-500 transform translate-y-4 opacity-0">
         <button onclick="forcePlayAudio()" class="px-5 py-3 rounded-2xl glass-card border border-crimson-500 bg-crimson-950/90 text-white shadow-2xl shadow-crimson-900/60 flex items-center gap-3 hover:bg-crimson-900/80 transition-all active:scale-95 group">
             <span class="w-3 h-3 rounded-full bg-crimson-500 animate-ping"></span>
@@ -120,14 +123,12 @@
         </button>
     </div>
 
-    
-    <header class="relative z-10 w-full px-6 py-6 flex justify-between items-center max-w-5xl mx-auto" id="mainHeader">
+    <header class="relative z-10 w-full px-6 py-6 flex justify-between items-center max-w-5xl mx-auto">
         <div class="flex items-center space-x-3">
             <span class="w-2.5 h-2.5 rounded-full bg-crimson-600 animate-ping inline-block"></span>
             <span class="font-serif italic text-lg text-crimson-500 tracking-wider">For You</span>
         </div>
         
-       
         <div class="flex items-center space-x-4">
             <button id="soundToggleBtn" onclick="toggleAudio()" class="px-4 py-2 rounded-full glass-card hover:border-crimson-500/50 transition-all duration-300 text-xs tracking-wider uppercase flex items-center gap-2 text-gray-300 hover:text-white">
                 <i id="soundIcon" class="fas fa-music text-crimson-500"></i>
@@ -136,76 +137,125 @@
         </div>
     </header>
 
-    
     <audio id="bgMusic" preload="auto" loop crossorigin="anonymous">
         <source src="nautilus.mp3" type="audio/mpeg">
     </audio>
 
-    
-    <main id="mainContent" class="relative z-10 flex-grow flex items-center justify-center px-4 py-6 max-w-4xl mx-auto w-full">
-        <div class="w-full glass-card rounded-3xl p-6 sm:p-10 md:p-12 glow-crimson relative overflow-hidden transition-all duration-700 my-auto">
+    <main class="relative z-10 flex-grow flex items-center justify-center px-4 py-6 max-w-4xl mx-auto w-full">
+        <div class="w-full glass-card rounded-3xl p-6 sm:p-10 md:p-12 glow-crimson relative transition-all duration-700 my-auto">
             
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-crimson-600 to-transparent"></div>
             <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-crimson-900 to-transparent"></div>
 
-            <div class="text-center mb-10">
-                <div class="inline-block mb-3">
-                    <i class="fas fa-heart text-3xl sm:text-4xl text-crimson-600 animate-heartbeat"></i>
+            <div class="relative min-h-[400px]">
+
+                <!-- СТРАНИЦА 1: Возвращение домой -->
+                <div id="page1" class="page-content page-active">
+                    <div class="text-center mb-8">
+                        <div class="inline-block mb-3">
+                            <i class="fas fa-heart text-3xl sm:text-4xl text-crimson-600 animate-heartbeat"></i>
+                        </div>
+                        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold text-white tracking-wide glow-text">
+                            Я очень соскучился
+                        </h1>
+                        <p class="font-cursive text-2xl sm:text-3xl text-crimson-500 mt-2 opacity-90">
+                            ...и наконец-то ты дома
+                        </p>
+                    </div>
+
+                    <div class="space-y-6 font-serif text-lg sm:text-xl leading-relaxed text-gray-200">
+                        <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
+                            В первые дни я думал, что ты уехала всего на неделю и совсем скоро вернёшься. Казалось, что это не так уж много и возможно я даже особо не замечу твоего отсутствия. Но уже после первого дня мне стало очень непривычно. Я начал очень сильно скучать. Ты ещё и не всегда могла мне отвечать из-за связи и девочек и у меня было ощущение, будто ты уехала не на неделю, а на год(((
+                        </p>
+
+                        <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
+                            Мне было очень грустно от того, что я даже не могу нормально с тобой поговорить, узнать, как прошёл твой день, услышать тебя. Особенно в последние дни я сильно переживал за твоё состояние. Я даже не мог просто посмотреть на твоё лицо, увидеть твои эмоции и понять, как ты себя чувствуешь, чем занимаешься и что у тебя происходит. Я понял, насколько сильно ты стала частью моей жизни. Без тебя всё какое-то пустое и непривычное. Каждый день мне хотелось просто прийти к тебе домой, увидеть тебя, крепко обнять и зацеловать до невозможности. А когда ты присылала мне фотки, я ваще сходил с ума))), каждую минуту думал как ты приедешь, как мы прийдем домой, я схвачу тебя, подниму на руки и кину на кровать, свяжу тебе руки, и доведу тебя до такого оргазма что ты стоять не сможешь)), на парах как только думал о тебе, генадию было похуй где мы с ним находимся, он стоял как на параде клянусь. За эту неделю я сходил с ума что тебя нет рядом, все время хотелось рассказать тебе что происходит, послушать твою реакцию и смех, и самое главное очень хотелось увидеть тебя.
+                        </p>
+
+                        <div class="py-4 my-2 border-y border-crimson-900/40 text-center font-serif italic text-crimson-200 leading-relaxed text-lg sm:text-xl space-y-4">
+                            <p>
+                                Я ждал тебя 8 бутылок морса,<br>
+                                3 заказанных озона,<br>
+                                76 кругов проиграла алиса
+                            </p>
+                            <p>
+                                я ждал тебя 20 посадок в машину,<br>
+                                20 целых 35 сотых сигарет,<br>
+                                я 70 раз вымыл чайный осадок,<br>
+                                и даже никуда не ходил.
+                            </p>
+                            <p>
+                                Практически два кошмара, тюбик пасты,<br>
+                                пару книг,<br>
+                                17 пустых восхождений в шарагу,<br>
+                                я ждал тебя так что от жизни отвык.
+                            </p>
+                        </div>
+
+                        <div class="pt-4 text-center">
+                            <p class="font-cursive text-3xl sm:text-4xl md:text-5xl text-crimson-500 leading-normal glow-text">
+                                Я очень люблю тебя и соскучился, и наконец то ты дома))) ❤️❤️❤️
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold text-white tracking-wide glow-text">
-                    Я очень соскучился
-                </h1>
-                <p class="font-cursive text-2xl sm:text-3xl text-crimson-500 mt-2 opacity-90">
-                    ...и наконец-то ты дома
-                </p>
+
+                <!-- СТРАНИЦА 2: Полгода -->
+                <div id="page2" class="page-content page-hidden">
+                    <div class="text-center mb-8">
+                        <div class="inline-block mb-3">
+                            <i class="fas fa-sparkles text-3xl sm:text-4xl text-crimson-500 animate-pulse"></i>
+                        </div>
+                        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold text-white tracking-wide glow-text">
+                            полгода))
+                        </h2>
+                    </div>
+
+                    <div class="space-y-6 font-serif text-lg sm:text-xl leading-relaxed text-gray-200">
+                        <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
+                            сегодня нам полгода, я безумно рад что ты рядом киса❤️❤️❤️, вроде бы всего полгода, а прошло как будто 10 лет, вроде бы 6 месяцев назад мы на др маши лежали в комнате и начали отношения, это очень важный и радостный момент для меня, что я даже забыл о всех проблемах которые могут вообще существовать, это мои первые отношения и я надеюсь первые и последние, ты стала для меня всем, можешь думать как хочешь, может это зависимость, может очень сильная привязанность, может это и плохо но я так не считаю, я каждый день просыпаюсь и вспоминаю какая у меня же ахуенная девушка, как же я тебя люблю ты бы знала, прости что я сейчас как будто сам не свой, сам не понимаю почему я так, но знаю что очень боюсь тебя потерять, даже не только в прямом смысле этого слова, но и душевно.
+                        </p>
+
+                        <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
+                            Вот правда столько всего у нас было, я так свободно себя никогда не чувствовал, я хотел и хочу постоянно тебе делать приятно, да я иногда ошибаюсь, но для меня это очередная преграда которую я буду ломать, чтобы больше так не ошибаться, я думал ничего не сможет нас разлучить, думал сейчас мы будем учиться, я начну зарабатывать и снимать квартиру, мы будем строить отношения всё лучше и лучше, но твоё решение поехать в китай я понимаю, и меня пугает то что у меня может и не получится оставаться вместе, если что я не пытаюсь отговорить не подумай только, просто это то что на душе лежит, я тебя полностью понимаю. что то я в это случайно углубился но да ладно), я безумно люблю тебч 🫶 ❤️, я очень мечтаю о том что в будущем мы будем просыпаться вместе, в своей квартире(пусть даже съемной), ехать на своих машинах на работу, хочу с тобой брать от жизни всё, хочу объездить с тобой множество стран, много чего повидать, надеюсь это будущее не так далеко, я пиздец как тебя люблю💘
+                        </p>
+
+                        <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
+                            я щас лежу на койке и у меня появилось много времени подумать, я вспомимаю как мы катались на велеках, катались разговаривали, у меня и у тебя было столько радости и любви в глазах, как мы снимали тиктоки где я даже не мог сообразить как ртом пошевелить, как мы готовили малину))) в шоколаде, как ты смеешься с моих шуток, как ты встречаешь меня заспанная и тянешься обнимать, как мы поехали на байкал, потом в баню, и еще потом на братское, как ты радуешься когда я дарю тебе цветы, как мы с тобой дурачимся, как мы ходили по тц покупали всякой прикольной темки, как мы ходили по ресторанам, и ты пыталась посчитать каждый раз сколько я потратил, как мы гуляли, разговаривали, как мы жили у бабушки, это моё самое беззаботное и приятное время, мы готовили, поливали огород, чем то занимались и было смешно, как мы потом жили у меня, к сожалению конечно мы это время всё проработали но все равно мне очень нравилось за тобой ухаживать, делать тебе коктейльчики а ты готовила покушац, как мы спали не чувствуя ног, столько моментов, боже как же я люблю тебя💕❤️
+                        </p>
+
+                        <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
+                            даже сейчас пишу и у меня слезы катятся, ты стала мне таким человеком, с которым я не хочу расставаться ни на минуту, мне очень нравятся наши отношения, я безумно рад что встретил тебя, ты моё солнце, красотка моя, любимая, дорогая, зая, котенок, киса, девочка мая, мне очень нравится когда ты улыбаешься, раньше думал что не будет человека который смог бы изменить меня, но ты смогла, у меня мир с тобой обретает краски как бы банально это не звучало, но правда, все заметели что я изменился, ты мой смысл жизни, я говорил конечно но раньше я не улыбался никогда, моего ебальника все боялись, я не разговаривал почти совсем, я мог прийти допустим в школу и не сказать ни слова без преувелечений, но сейчас я тебе очень благодарен зая, щас конечно прозвучит опять банально но я «нашел ту самую», ты незаменима для меня, и даже если я не смогу приехать, и по какой то не дай бог причине мы расстанемся, знай я всё равно люблю только тебя и буду любить только тебя❤️, это не воздух, даже не думай что я пизжу, ты для меня не просто девушка, ты больше чем ангел, не меньше чем бог, ты для меня больше чем кто либо, ты моё самое дорогое сокровище, ты бесценна для меня и всё таки для меня ты самое важное в жизни. ❤️💘🫶
+                        </p>
+
+                        <div class="py-4 my-2 border-y border-crimson-900/40 text-center font-serif italic text-crimson-200 leading-relaxed text-lg sm:text-xl space-y-4">
+                            <p>
+                                Ну как же я люблю тебя до невозможности, даже если ты уедешь, возможно тебе неприятно будет это слышать, а мне писать, если у тебя появится кто то другой, я буду считать сколько бутылок виски, заказанных пицц, кругов проиграли диски, в ожидании взмаха твоих ресниц, сколько пересадок, сколько сигарет, сколько вылил чайный осадок, сходил ли на балет, сколько путешествий, сколько тюбиков пасты, сколько книг, сколько пустых восхождений на сцену, сколько я тебя ждал что от жизни отвык, но надеюсь конечно всё у нас получится, возможно скажешь что я дурак, но я очень тебя люблю❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️
+                            </p>
+                        </div>
+
+
+                    </div>
+                </div>
+
             </div>
 
-            <div class="space-y-6 font-serif text-lg sm:text-xl md:text-2xl leading-relaxed sm:leading-loose text-gray-200 text-justify sm:text-left">
+            <!-- Кнопки управления слайдером -->
+            <div class="mt-8 pt-6 border-t border-crimson-900/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans">
                 
-                <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
-                    В первые дни я думал, что ты уехала всего на неделю и совсем скоро вернёшься. Казалось, что это не так уж много и возможно я даже особо не замечу твоего отсутствия. Но уже после первого дня мне стало очень непривычно. Я начал очень сильно скучать. Ты ещё и не всегда могла мне отвечать из-за связи и девочек и у меня было ощущение, будто ты уехала не на неделю, а на год(((
-                </p>
+                <button id="prevBtn" onclick="changePage(-1)" class="px-5 py-2.5 rounded-full bg-darkness-950/80 border border-crimson-900/50 hover:border-crimson-500 text-gray-300 hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center gap-2">
+                    <i class="fas fa-chevron-left"></i> Назад
+                </button>
 
-                <p class="text-gray-200 font-serif tracking-normal leading-relaxed">
-                    Мне было очень грустно от того, что я даже не могу нормально с тобой поговорить, узнать, как прошёл твой день, услышать тебя. Особенно в последние дни я сильно переживал за твоё состояние. Я даже не мог просто посмотреть на твоё лицо, увидеть твои эмоции и понять, как ты себя чувствуешь, чем занимаешься и что у тебя происходит. Я понял, насколько сильно ты стала частью моей жизни. Без тебя всё какое-то пустое и непривычное. Каждый день мне хотелось просто прийти к тебе домой, увидеть тебя, крепко обнять и зацеловать до невозможности. А когда ты присылала мне фотки, я ваще сходил с ума))), каждую минуту думал как ты приедешь, как мы прийдем домой, я схвачу тебя, подниму на руки и кину на кровать, свяжу тебе руки, и доведу тебя до такого оргазма что ты стоять не сможешь)), на парах как только думал о тебе, генадию было похуй где мы с ним находимся, он стоял как на параде клянусь. За эту неделю я сходил с ума что тебя нет рядом, все время хотелось рассказать тебе что происходит, послушать твою реакцию и смех, и самое главное очень хотелось увидеть тебя.
-                </p>
-
-                <div class="py-4 my-2 border-y border-crimson-900/40 text-center font-serif italic text-crimson-200 leading-relaxed text-lg sm:text-xl space-y-4">
-                    <p>
-                        Я ждал тебя 8 бутылок морса,<br>
-                        3 заказанных озона,<br>
-                        76 кругов проиграла алиса
-                    </p>
-                    <p>
-                        я ждал тебя 20 посадок в машину,<br>
-                        20 целых 35 сотых сигарет,<br>
-                        я 70 раз вымыл чайный осадок,<br>
-                        и даже никуда не ходил.
-                    </p>
-                    <p>
-                        Практически два кошмара, тюбик пасты,<br>
-                        пару книг,<br>
-                        17 пустых восхождений в шарагу,<br>
-                        я ждал тебя так что от жизни отвык.
-                    </p>
+                <div class="flex items-center gap-2" id="pageDots">
+                    <span onclick="goToPage(1)" class="w-3 h-3 rounded-full bg-crimson-500 cursor-pointer transition-all"></span>
+                    <span onclick="goToPage(2)" class="w-3 h-3 rounded-full bg-gray-700 cursor-pointer transition-all"></span>
                 </div>
 
-                <div class="pt-4 text-center">
-                    <p class="font-cursive text-3xl sm:text-4xl md:text-5xl text-crimson-500 leading-normal glow-text">
-                        Я очень люблю тебя и соскучился, и наконец то ты дома))) ❤️❤️❤️
-                    </p>
-                </div>
+                <button id="nextBtn" onclick="changePage(1)" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-crimson-800 to-crimson-600 text-white hover:from-crimson-700 hover:to-crimson-500 transition-all shadow-lg shadow-crimson-900/40 flex items-center gap-2">
+                    Далее <i class="fas fa-chevron-right"></i>
+                </button>
 
-            </div>
-
-            <div class="mt-12 pt-6 border-t border-crimson-900/30 flex flex-row items-center justify-between text-xs text-gray-400 font-sans">
-                <div class="flex items-center gap-2 text-crimson-500">
-                    <i class="fas fa-lock"></i>
-                    <span>Только для твоих глаз</span>
-                </div>
-                <div class="font-serif italic text-gray-400 text-right">
-                    С возвращением домой, любимая.
-                </div>
             </div>
 
         </div>
@@ -216,7 +266,55 @@
     </footer>
 
     <script>
-        
+        let currentPage = 1;
+        const totalPages = 2;
+
+        function updatePages() {
+            for (let i = 1; i <= totalPages; i++) {
+                const page = document.getElementById(`page${i}`);
+                if (i === currentPage) {
+                    page.classList.remove('page-hidden');
+                    page.classList.add('page-active');
+                } else {
+                    page.classList.remove('page-active');
+                    page.classList.add('page-hidden');
+                }
+            }
+
+            document.getElementById('prevBtn').disabled = (currentPage === 1);
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentPage === totalPages) {
+                nextBtn.classList.add('opacity-40', 'pointer-events-none');
+            } else {
+                nextBtn.classList.remove('opacity-40', 'pointer-events-none');
+            }
+
+            const dots = document.getElementById('pageDots').children;
+            for (let i = 0; i < dots.length; i++) {
+                if (i + 1 === currentPage) {
+                    dots[i].className = 'w-3 h-3 rounded-full bg-crimson-500 cursor-pointer transition-all scale-125';
+                } else {
+                    dots[i].className = 'w-3 h-3 rounded-full bg-gray-700 cursor-pointer transition-all';
+                }
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                updatePages();
+            }
+        }
+
+        function goToPage(pageNumber) {
+            currentPage = pageNumber;
+            updatePages();
+        }
+
+        // Фоновые частицы
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
@@ -228,10 +326,7 @@
         });
 
         class Particle {
-            constructor() {
-                this.reset();
-            }
-
+            constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * width;
                 this.y = height + Math.random() * 50;
@@ -241,13 +336,11 @@
                 this.opacity = Math.random() * 0.5 + 0.2;
                 this.color = Math.random() > 0.4 ? '#ff1744' : '#9b0000';
             }
-
             update() {
                 this.y -= this.speedY;
                 this.x += this.speedX;
                 if (this.y < -20) this.reset();
             }
-
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
@@ -260,31 +353,27 @@
         }
 
         const particles = Array.from({ length: 50 }, () => new Particle());
-
         function animateParticles() {
             ctx.clearRect(0, 0, width, height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
+            particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animateParticles);
         }
 
         window.onload = function() {
             animateParticles();
             playNautilusAudio();
+            updatePages();
         };
 
-       
+        // Аудио
         const audio = document.getElementById('bgMusic');
         let isAudioPlaying = false;
         let fadeInterval = null;
 
         function playNautilusAudio() {
             if (!audio) return;
-
             audio.currentTime = 39;
-            audio.volume = 0; 
+            audio.volume = 0;
 
             const playPromise = audio.play();
             if (playPromise !== undefined) {
@@ -293,14 +382,12 @@
                     updateSoundButtonUI(true);
                     hideAudioPrompt();
 
-                  
                     const targetVolume = 0.5;
                     const duration = 4000; 
                     const intervalTime = 50;
                     const step = targetVolume / (duration / intervalTime);
 
                     if (fadeInterval) clearInterval(fadeInterval);
-
                     fadeInterval = setInterval(() => {
                         if (audio.volume + step < targetVolume) {
                             audio.volume += step;
@@ -310,7 +397,6 @@
                         }
                     }, intervalTime);
                 }).catch(error => {
-                    console.log("Автозапуск заблокирован браузером. Показываем кнопку активации:", error);
                     showAudioPrompt();
                 });
             }
@@ -324,16 +410,14 @@
                 isAudioPlaying = true;
                 updateSoundButtonUI(true);
                 hideAudioPrompt();
-            }).catch(e => console.log("Ошибка принудительного запуска:", e));
+            }).catch(e => console.log(e));
         }
 
         function showAudioPrompt() {
             const prompt = document.getElementById('audioPrompt');
             if (prompt) {
                 prompt.classList.remove('hidden');
-                setTimeout(() => {
-                    prompt.classList.remove('translate-y-4', 'opacity-0');
-                }, 50);
+                setTimeout(() => prompt.classList.remove('translate-y-4', 'opacity-0'), 50);
             }
         }
 
@@ -341,19 +425,14 @@
             const prompt = document.getElementById('audioPrompt');
             if (prompt) {
                 prompt.classList.add('translate-y-4', 'opacity-0');
-                setTimeout(() => {
-                    prompt.classList.add('hidden');
-                }, 500);
+                setTimeout(() => prompt.classList.add('hidden'), 500);
             }
         }
 
         function toggleAudio() {
             if (!audio) return;
-
             if (audio.paused) {
-                if (audio.currentTime < 39) {
-                    audio.currentTime = 39;
-                }
+                if (audio.currentTime < 39) audio.currentTime = 39;
                 audio.play();
                 isAudioPlaying = true;
                 updateSoundButtonUI(true);
